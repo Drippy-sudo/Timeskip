@@ -4,13 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "InteractInterface.h"
+
 #include "CC_Character.generated.h"
 
 class UCameraComponent;
 class USpringArmComponent;
 
 UCLASS()
-class NOCODECHALLENGE_API ACC_Character : public ACharacter
+class NOCODECHALLENGE_API ACC_Character : public ACharacter, public IInteractInterface
 {
 	GENERATED_BODY()
 
@@ -27,6 +29,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player Mesh")
 	UStaticMeshComponent* MeshComp;
 
+	void InteractPressed();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -34,6 +38,13 @@ protected:
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, 
 		bool bFromSweep, const FHitResult& SweepResult);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction")
+	float TraceDistance;
+
+	UFUNCTION(BlueprintNativeEvent)
+	void TraceForward();
+	void TraceForward_Implementation();
 
 public:	
 	// Called every frame
@@ -44,4 +55,8 @@ public:
 
 	// Movement functions
 	void MoveRight(float Value);
+
+	void Interact_Implementation() override; // Blueprint version
+
+	virtual void InteractPure() override; // C++ version
 };
