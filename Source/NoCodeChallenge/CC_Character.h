@@ -59,4 +59,6 @@ public:
 	void Interact_Implementation() override; // Blueprint version
 
 	virtual void InteractPure() override; // C++ version
+
+	FVector MousePosition;
 };

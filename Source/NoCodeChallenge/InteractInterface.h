@@ -6,6 +6,9 @@
 #include "UObject/Interface.h"
 #include "InteractInterface.generated.h"
 
+class UCameraComponent;
+class USpringArmComponent;
+
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
 class UInteractInterface : public UInterface
@@ -22,7 +25,6 @@ class NOCODECHALLENGE_API IInteractInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-
 	UFUNCTION(BlueprintNativeEvent, Category = "Interact")
 	void Interact();
 

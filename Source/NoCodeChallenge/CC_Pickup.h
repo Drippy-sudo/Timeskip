@@ -4,13 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "InteractInterface.h"
+
 #include "CC_Pickup.generated.h"
 
 class UCapsuleComponent;
 class USceneComponent;
 
 UCLASS()
-class NOCODECHALLENGE_API ACC_Pickup : public AActor
+class NOCODECHALLENGE_API ACC_Pickup : public AActor, public IInteractInterface
 {
 	GENERATED_BODY()
 	
@@ -21,6 +23,13 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")
+	UStaticMeshComponent* MeshComp;
+
+	UFUNCTION()
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+		bool bFromSweep, const FHitResult& SweepResult);
 
 public:	
 	// Called every frame
@@ -34,4 +43,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pickup", meta = (AllowPrivateAccess = "true"))
 	USceneComponent* SceneComponent;
+
+	void Interact_Implementation() override; // Blueprint version
+
+	virtual void InteractPure() override; // C++ version
 };

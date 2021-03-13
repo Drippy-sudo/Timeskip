@@ -15,13 +15,28 @@ ACC_Pickup::ACC_Pickup()
 
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule Component"));
 	CapsuleComponent->AttachTo(SceneComponent);
+
+	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	MeshComp->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
 void ACC_Pickup::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	MeshComp->OnComponentBeginOverlap.AddDynamic(this, &ACC_Pickup::OnOverlapBegin);
+}
+
+void ACC_Pickup::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+	bool bFromSweep, const FHitResult& SweepResult)
+{
+	IInteractInterface* Interface = Cast<IInteractInterface>(OtherActor);
+	if (Interface)
+	{
+		Interface->InteractPure();
+		Destroy(true);
+	}
 }
 
 // Called every frame
@@ -31,3 +46,12 @@ void ACC_Pickup::Tick(float DeltaTime)
 
 }
 
+void ACC_Pickup::Interact_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Implementation"));
+}
+
+void ACC_Pickup::InteractPure()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Pure"));
+}

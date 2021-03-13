@@ -1,10 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "CC_Character.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "DrawDebugHelpers.h"
-#include "CC_Character.h"
+
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ACC_Character::ACC_Character()
@@ -89,7 +91,6 @@ void ACC_Character::TraceForward_Implementation()
 void ACC_Character::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
