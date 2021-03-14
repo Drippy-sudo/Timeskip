@@ -60,5 +60,5 @@ public:
 
 	virtual void InteractPure() override; // C++ version
 
-	FVector MousePosition;
+	FRotator PlayerRestRotation;
 };

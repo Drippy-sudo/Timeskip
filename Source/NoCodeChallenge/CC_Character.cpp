@@ -26,6 +26,8 @@ ACC_Character::ACC_Character()
 	MeshComp->SetupAttachment(RootComponent);
 
 	TraceDistance = 2000.0f;
+
+	PlayerRestRotation = GetActorRotation();
 }
 
 void ACC_Character::InteractPressed()
@@ -67,22 +69,12 @@ void ACC_Character::TraceForward_Implementation()
 
 	DrawDebugLine(GetWorld(), Start, End, FColor::Orange, false, 2.0f);
 
-
 	if (bHit)
 	{
-		// DrawDebugBox(GetWorld(), Hit.ImpactPoint, FVector(5, 5, 5), FColor::Emerald, false, 2.0f);
-
-		//if (Hit.GetActor()->GetClass()->ImplementsInterface(UInteractInterface::StaticClass()))
-		//{
-		//	Cast<IInteractInterface>(Hit.GetActor())->InteractPure();
-		//	IInteractInterface::Execute_Interact(Hit.GetActor());
-		//}
-
 		IInteractInterface* Interface = Cast<IInteractInterface>(Hit.GetActor());
 		if (Interface)
 		{
 			Interface->InteractPure(); // C++ version
-			//Interface->Execute_Interact(Hit.GetActor()); // Blueprint version
 		}
 	}
 }
@@ -91,6 +83,8 @@ void ACC_Character::TraceForward_Implementation()
 void ACC_Character::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	SetActorLocation(FVector(0.0f, GetActorLocation().Y, GetActorLocation().Z));	
 }
 
 // Called to bind functionality to input
@@ -111,9 +105,34 @@ void ACC_Character::MoveRight(float Value)
 	{
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		AddMovementInput(Direction, Value);
+
+		float speed = 100.0f;
+		float rotationInput = 0.0f;
+
+		rotationInput = Direction.SizeSquared() * speed * GetWorld()->GetDeltaSeconds();
+		
+		static bool isFacingForward = true;
+
+		if (GetActorRotation().Yaw > PlayerRestRotation.Yaw && Value == 1.0f)
+		{
+			isFacingForward = true;
+			AddControllerYawInput(-rotationInput);
+		}
+		else if (GetActorRotation().Yaw < (PlayerRestRotation.Yaw + 175.0f) && Value == -1.0f)
+		{
+			isFacingForward = false;
+			AddControllerYawInput(rotationInput);
+		}
+		else
+			AddControllerYawInput(0);
+
+		if(isFacingForward == true)
+			AddMovementInput(Direction, Value);
+		else
+			AddMovementInput(-Direction, Value);
+
+		UE_LOG(LogTemp, Warning, TEXT("Actor Rotation: %f"), GetActorRotation().Yaw);
 	}
 }
 
