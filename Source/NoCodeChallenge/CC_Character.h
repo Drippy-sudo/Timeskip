@@ -61,5 +61,7 @@ public:
 	virtual void InteractPure() override; // C++ version
 
 	FRotator PlayerRestRotation;
-	bool IsTurning = false;
+
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float turnSpeed = 150.0f;
 };
