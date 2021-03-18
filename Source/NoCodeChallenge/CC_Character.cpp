@@ -122,17 +122,26 @@ void ACC_Character::MoveRight(float Value)
 		else if (GetActorRotation().Yaw < (PlayerRestRotation.Yaw + 175.0f) && Value == -1.0f)
 		{
 			isFacingForward = false;
+			IsTurning = true;
 			AddControllerYawInput(rotationInput);
 		}
 		else
+		{
+			IsTurning = false;
 			AddControllerYawInput(0);
+		}
 
-		if(isFacingForward == true)
+		if (isFacingForward == true && IsTurning == false)
+		{
+
 			AddMovementInput(Direction, Value);
+		}
 		else
+		{
 			AddMovementInput(-Direction, Value);
+		}
 
-		UE_LOG(LogTemp, Warning, TEXT("Actor Rotation: %f"), GetActorRotation().Yaw);
+		//UE_LOG(LogTemp, Warning, TEXT("Actor Rotation: %f"), GetActorRotation().Yaw);
 	}
 }
 
