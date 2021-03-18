@@ -61,4 +61,5 @@ public:
 	virtual void InteractPure() override; // C++ version
 
 	FRotator PlayerRestRotation;
+	bool IsTurning = false;
 };
