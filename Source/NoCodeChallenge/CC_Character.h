@@ -56,6 +56,8 @@ public:
 	// Movement functions
 	void MoveRight(float Value);
 
+	void SlowTime();
+
 	void Interact_Implementation() override; // Blueprint version
 
 	virtual void InteractPure() override; // C++ version
@@ -63,5 +65,7 @@ public:
 	FRotator PlayerRestRotation;
 
 	UPROPERTY(EditAnywhere, Category = "Movement")
-	float turnSpeed = 150.0f;
+	float TurnSpeed = 150.0f;
+
+	bool Is
 };

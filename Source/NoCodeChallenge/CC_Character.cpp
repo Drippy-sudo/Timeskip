@@ -94,7 +94,9 @@ void ACC_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAction("SlowTime", IE_Pressed, this, &ACharacter::SlowTime);
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACC_Character::InteractPressed);
+
 
 	PlayerInputComponent->BindAxis("MoveRight", this, &ACC_Character::MoveRight);
 }
@@ -110,7 +112,7 @@ void ACC_Character::MoveRight(float Value)
 		float rotationInput = 0.0f;
 		static bool isFacingForward = true;
 
-		rotationInput = Direction.SizeSquared() * turnSpeed * GetWorld()->GetDeltaSeconds();
+		rotationInput = Direction.SizeSquared() * TurnSpeed * GetWorld()->GetDeltaSeconds();
 
 		if (GetActorRotation().Yaw > PlayerRestRotation.Yaw && Value == 1.0f)
 		{
@@ -137,6 +139,11 @@ void ACC_Character::MoveRight(float Value)
 			AddMovementInput(-Direction, Value);
 		}
 	}
+}
+
+void ACC_Character::SlowTime()
+{
+
 }
 
 void ACC_Character::Interact_Implementation()
