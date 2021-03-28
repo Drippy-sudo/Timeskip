@@ -67,5 +67,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	float TurnSpeed = 150.0f;
 
-	bool Is
+	bool IsTimeSlow = false;
+	bool IsTickOff = false;
 };

@@ -85,6 +85,8 @@ void ACC_Character::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	SetActorLocation(FVector(0.0f, GetActorLocation().Y, GetActorLocation().Z));	
+
+	//IsTimeSlow = false;
 }
 
 // Called to bind functionality to input
@@ -94,9 +96,8 @@ void ACC_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-	PlayerInputComponent->BindAction("SlowTime", IE_Pressed, this, &ACharacter::SlowTime);
+	PlayerInputComponent->BindAction("SlowTime", IE_Released, this, &ACC_Character::SlowTime);
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACC_Character::InteractPressed);
-
 
 	PlayerInputComponent->BindAxis("MoveRight", this, &ACC_Character::MoveRight);
 }
@@ -112,7 +113,13 @@ void ACC_Character::MoveRight(float Value)
 		float rotationInput = 0.0f;
 		static bool isFacingForward = true;
 
-		rotationInput = Direction.SizeSquared() * TurnSpeed * GetWorld()->GetDeltaSeconds();
+		if(IsTimeSlow == false)
+			rotationInput = Direction.SizeSquared() * TurnSpeed * GetWorld()->GetDeltaSeconds();
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("IsTimeSlow = true"));
+			rotationInput = Direction.SizeSquared() * TurnSpeed * GetWorld()->GetDeltaSeconds() * 10.0f;
+		}
 
 		if (GetActorRotation().Yaw > PlayerRestRotation.Yaw && Value == 1.0f)
 		{
@@ -131,7 +138,6 @@ void ACC_Character::MoveRight(float Value)
 
 		if (isFacingForward == true)
 		{
-
 			AddMovementInput(Direction, Value);
 		}
 		else
@@ -143,7 +149,7 @@ void ACC_Character::MoveRight(float Value)
 
 void ACC_Character::SlowTime()
 {
-
+	IsTimeSlow = true;
 }
 
 void ACC_Character::Interact_Implementation()
