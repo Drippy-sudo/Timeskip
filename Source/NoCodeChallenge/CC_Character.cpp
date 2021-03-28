@@ -5,8 +5,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "DrawDebugHelpers.h"
-
 #include "Kismet/GameplayStatics.h"
+#include "Engine/World.h"
 
 // Sets default values
 ACC_Character::ACC_Character()
@@ -79,14 +79,68 @@ void ACC_Character::TraceForward_Implementation()
 	}
 }
 
+void ACC_Character::SlowTime()
+{
+	static bool flip;
+	static int count = 0;
+
+	count++;
+	if (count == 1)
+		flip = true;
+	else if (count == 2)
+	{
+		flip = false;
+		count = 0;
+	}	
+
+	UE_LOG(LogTemp, Warning, TEXT("Count %i"), count);
+
+	if (flip == true)
+	{
+		// TODO: do time since started slowing time
+		// Make useable in code
+		// Use for time UI
+
+		// Slow global time dialation
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.1f);
+		this->CustomTimeDilation = 10.0f;
+
+		UE_LOG(LogTemp, Warning, TEXT("Time Slow"));
+
+		IsTimeSlow = true;
+	}
+	else if (flip == false)
+	{
+		// Reset time dialation
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
+		this->CustomTimeDilation = 1.0f;
+
+		UE_LOG(LogTemp, Warning, TEXT("Normal Time"));
+
+		IsTimeSlow = false;
+	}
+}
+
 // Called every frame
 void ACC_Character::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//float GlobalDeltaTimeSlowed = GetWorld()->GetTimeSeconds() / 10.0f;
+
+	//UE_LOG(LogTemp, Warning, TEXT("GlobalDeltaTimeSlowed: %f"), GlobalDeltaTimeSlowed);
+	//UE_LOG(LogTemp, Warning, TEXT("GetActorTimeDilation: %f"), GetActorTimeDilation());
+
+
 	SetActorLocation(FVector(0.0f, GetActorLocation().Y, GetActorLocation().Z));	
 
-	//IsTimeSlow = false;
+	//if (GetActorTimeDilation == GlobalDeltaTimeSlowed)
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("Time is slow."));
+	//	IsTimeSlow = true;
+	//}
+	//else
+	//	IsTimeSlow = false;
 }
 
 // Called to bind functionality to input
@@ -96,7 +150,7 @@ void ACC_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-	PlayerInputComponent->BindAction("SlowTime", IE_Released, this, &ACC_Character::SlowTime);
+	PlayerInputComponent->BindAction("SlowTime", IE_Pressed, this, &ACC_Character::SlowTime);
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACC_Character::InteractPressed);
 
 	PlayerInputComponent->BindAxis("MoveRight", this, &ACC_Character::MoveRight);
@@ -115,10 +169,10 @@ void ACC_Character::MoveRight(float Value)
 
 		if(IsTimeSlow == false)
 			rotationInput = Direction.SizeSquared() * TurnSpeed * GetWorld()->GetDeltaSeconds();
-		else
+		else if (IsTimeSlow == true)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("IsTimeSlow = true"));
 			rotationInput = Direction.SizeSquared() * TurnSpeed * GetWorld()->GetDeltaSeconds() * 10.0f;
+			UE_LOG(LogTemp, Warning, TEXT("IsTimeSlow = true"));
 		}
 
 		if (GetActorRotation().Yaw > PlayerRestRotation.Yaw && Value == 1.0f)
@@ -145,11 +199,6 @@ void ACC_Character::MoveRight(float Value)
 			AddMovementInput(-Direction, Value);
 		}
 	}
-}
-
-void ACC_Character::SlowTime()
-{
-	IsTimeSlow = true;
 }
 
 void ACC_Character::Interact_Implementation()

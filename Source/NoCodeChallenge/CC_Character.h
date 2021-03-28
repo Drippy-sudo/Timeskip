@@ -46,6 +46,9 @@ protected:
 	void TraceForward();
 	void TraceForward_Implementation();
 
+	UFUNCTION()
+	void SlowTime();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -55,8 +58,6 @@ public:
 
 	// Movement functions
 	void MoveRight(float Value);
-
-	void SlowTime();
 
 	void Interact_Implementation() override; // Blueprint version
 
@@ -68,5 +69,4 @@ public:
 	float TurnSpeed = 150.0f;
 
 	bool IsTimeSlow = false;
-	bool IsTickOff = false;
 };
